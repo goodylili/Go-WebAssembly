@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css"  href="./style.css">
+  <title>Go REPLER</title>
+</head>
+<body>
+<script>
+  if (!WebAssembly.instantiateStreaming) {
+    // polyfill
+    WebAssembly.instantiateStreaming = async (resp, importObject) => {
+      const source = await (await resp).arrayBuffer();
+      return await WebAssembly.instantiate(source, importObject);
+    };
+  }
+
+  const go = new Go();
+
+  let mod, inst;
+
+  WebAssembly.instantiateStreaming(fetch("lib.wasm"), go.importObject).then(
+          result => {
+            mod = result.module;
+            inst = result.instance;
+            document.getElementById("runButton").disabled = false;
+          }
+  );
+
+  async function run() {
+    await go.run(inst);
+    inst = await WebAssembly.instantiate(mod, go.importObject); // reset instance
+  }
+</script>
+  <header>
+    <p>GO</p>
+
+    <ul>
+      <li>Why Go</li>
+      <li>Get Started</li>
+      <li>Docs</li>
+      <li>Packages</li>
+      <li>Play</li>
+      <li>Blog</li>
+    </ul>
+  </header>
+
+  <section>
+    <div class="repler">
+      <p>The GO Repler</p>
+      <div>
+        <button type="button" name="button" class="run">Run</button>
+      </div>
+    </div>
+    <div>
+      <textarea name="name" id="input" rows="30" placeholder="Goodness this is the input"></textarea>
+    </div>
+    <div>
+      <textarea name="" id="output" rows="30" placeholder="Goodness this is the output"></textarea>
+    </div>
+  </section>
+
+  <script src="script.js" charset="utf-8"></script>
+</body>
+</html>
